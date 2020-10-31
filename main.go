@@ -49,7 +49,7 @@ func main() {
 		var req Request
 		_ = json.Unmarshal(data, &req)
 
-		var actions = []string{"stay", "move", "eat", "load", "unload"}
+		var actions = []string{"stay", "move", "eat", "take", "put"}
 		var directions = []string{"up", "down", "right", "left"}
 		response := Response{
 			Orders: make([]Order,0),
