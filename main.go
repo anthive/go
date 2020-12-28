@@ -9,10 +9,9 @@ import (
 )
 
 type Request struct {
-	Id     string `json:"id"`
-	Tick   int   `json:"tick"`
-	Ants   []Ant  `json:"ants"`
-	//TODO: Canvas Canvas `json:"canvas"`
+	Id   string `json:"id"`
+	Tick int    `json:"tick"`
+	Ants []Ant  `json:"ants"`
 }
 
 type Response struct {
@@ -20,18 +19,18 @@ type Response struct {
 }
 
 type Order struct {
-	AntId     int   `json:"antId"`
+	AntId     int    `json:"antId"`
 	Action    string `json:"act"`
 	Direction string `json:"dir"`
 }
 
 type Ant struct {
-	Id      int   `json:"id"`
+	Id      int    `json:"id"`
 	Event   string `json:"event"`
 	Errors  uint   `json:"errors"`
-	Age     int   `json:"age"`
-	Health  int   `json:"health"`
-	Payload int   `json:"payload"`
+	Age     int    `json:"age"`
+	Health  int    `json:"health"`
+	Payload int    `json:"payload"`
 	Point   Point  `json:"point"`
 }
 
@@ -41,7 +40,9 @@ type Point struct {
 }
 
 func main() {
+	// starting listen for http calls on port :7070
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// your bot respons should be json object
 		w.Header().Set("content-type", "application/json")
 
 		data, _ := ioutil.ReadAll(r.Body)
@@ -49,18 +50,23 @@ func main() {
 		var req Request
 		_ = json.Unmarshal(data, &req)
 
+		// available actions and directions
 		var actions = []string{"stay", "move", "eat", "take", "put"}
 		var directions = []string{"up", "down", "right", "left"}
 		response := Response{
-			Orders: make([]Order,0),
+			Orders: make([]Order, 0),
 		}
+
+		// loop through ants and give orders
 		for _, ant := range req.Ants {
 			order := Order{
 				AntId:     ant.Id,
-				Action:    actions[rand.Intn(4)],
-				Direction: directions[rand.Intn(3)],
+				Action:    actions[rand.Intn(4)],    // pick random action from array on line 54
+				Direction: directions[rand.Intn(3)], // pick random direction from array on line 55
 			}
-			response.Orders = append(response.Orders,order)
+
+			// add order to your response object from line 20
+			response.Orders = append(response.Orders, order)
 		}
 
 		bytes, _ := json.Marshal(response)
@@ -78,3 +84,9 @@ func main() {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
+
+// this code available at https://github.com/anthive/go
+// to test it localy, submit post request with payload.json using postman or curl
+// curl -X 'POST' -d @payload.json http://localhost:7070
+
+// have fun!
